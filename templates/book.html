@@ -1,13 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div>
+    <h1>{{ book.title }}</h1>
+    <p>isbn : {{ book.isbn }}</p>
+    <p>author : <a href="{{ url_for('book_author', author=book.author) }}">{{ book.author }}</a></p>
+    <p>year : {{ book.year }}</p>
+    <p>total reviews : {{ book.reviewers }}</p>
+    <p>rating : {{ book.avgscore }}</p>
+</div>
+
+{% for review in reviews %}
+<div class="review">
+    <h2>{{ review.username }} score : {{ review.score }}</h2>
+    <p>{{ review.review }}</p>
+</div>
+{% endfor %}
+
+{% if user != None %}
+    {% if check == None %}
     <div>
-        <h1>{{ book.title }}</h1>
-        <p>isbn : {{ book.isbn }}</p>
-        <p>author : <a href="{{ url_for('book_author', author=book.author) }}">{{ book.author }}</a></p>
-        <p>year : {{ book.year }}</p>
-        <p>total reviews : {{ book.reviewers }}</p>
-        <p>rating : {{ book.avgscore }}</p>
+        <h2>Review</h2>
+        <form action="{{ url_for('review', isbn=book.isbn) }}" , method="POST">
+        <textarea name="review" cols="30" rows="10" placeholder="your review"></textarea>
+        <br>
+        <h3>score</h3>
+        {% for i in range(5) %}
+        <input type="radio" name="score" id="{{ i+1 }}" value="{{ i+1 }}">
+        <label for="{{ i+1 }}">{{ i+1 }}</label>
+        {% endfor %}
+        <button>submit</button>
+        </form>
     </div>
-    <a href="{{ url_for('index') }}">return to index</a>
+    {% else %}
+    <div>
+        <h2>the book has been reviewed by you</h2>
+    </div>
+        {% endif %}
+{% endif %}
+
+<a href="{{ url_for('index') }}">return to index</a>
+
 {% endblock %}

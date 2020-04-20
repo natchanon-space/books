@@ -29,7 +29,19 @@ def book(isbn):
 
     book = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn":isbn}).fetchone()
 
-    return render_template('book.html', book=book, user=user)
+    reviews = db.execute("SELECT * FROM reviews, books, users WHERE \
+                            books.isbn = :isbn AND books.isbn = reviews.isbn AND users.user_id = reviews.user_id", \
+                            {"isbn":isbn}).fetchall()
+    reviews = reviews[::-1]
+
+    if user != None:
+        check = db.execute("SELECT * FROM reviews WHERE \
+                            user_id = :user_id AND isbn = :isbn", \
+                            {"user_id":user.user_id, "isbn":isbn}).fetchone()
+    else:
+        check = None
+
+    return render_template('book.html', book=book, user=user, check=check, reviews=reviews)
 
 @app.route("/book/author/<author>")
 def book_author(author):
@@ -62,7 +74,10 @@ def search():
 @app.route("/account/<username>")
 def account(username):
 
-    return render_template('account.html', username=username)
+    reviews = db.execute("SELECT * FROM reviews, books WHERE reviews.user_id = :user_id AND reviews.isbn = books.isbn" , {"user_id":user.user_id}).fetchall()
+    reviews = reviews[::-1]
+
+    return render_template('account.html', user=user, reviews=reviews)
 
 @app.route("/account/login", methods=["POST"])
 def login():
@@ -112,3 +127,32 @@ def logout():
     user = None
 
     return redirect(url_for('index'))
+
+# section 3 review and updatedb
+@app.route("/book/isbn/<isbn>/review", methods=["POST"])
+def review(isbn):
+
+    review = request.form.get("review")
+    score = float(request.form.get("score"))
+    
+    db.execute("INSERT INTO reviews VALUES ( \
+                :user_id, :isbn, :review, :score)", \
+                {"user_id":user.user_id, "isbn":isbn, "review":review, "score":score})
+
+    book_review = db.execute("SELECT * FROM books WHERE isbn = :isbn", {"isbn":isbn}).fetchone()
+    
+    reviewer = book_review.reviewers
+    avgscore = book_review.avgscore 
+
+    avgscore = (avgscore * float(reviewer) + score) / (float(reviewer) + 1)
+    reviewer += 1 
+
+    db.execute("UPDATE books SET \
+                reviewers = :reviewer, \
+                avgscore = :avgscore \
+                WHERE isbn = :isbn", \
+                {"reviewer":reviewer, "avgscore":avgscore, "isbn":isbn})
+
+    db.commit()
+
+    return redirect(url_for('account', username=user.username))

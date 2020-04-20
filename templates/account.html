@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Data</title>
-</head>
-<body>
-    <h1>Welcome {{ username }}</h1>
-    <a href="{{ url_for('index') }}">return to index</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1>"{{ user.username }}" Reviews</h1>
+</div>
+{% for review in reviews %}
+<div class="review">
+    <h2><a href="{{url_for('book', isbn=review.isbn) }}">{{ review.title }} score : {{ review.score }}</a></h2>
+    <p>{{ review.review }}</p>
+</div>
+{% endfor %}
+<a href="{{ url_for('index') }}">return to index</a>
+{% endblock %}
