@@ -18,7 +18,7 @@ db.execute("CREATE TABLE books ( \
             author VARCHAR, \
             year INTEGER, \
             reviewers INTEGER, \
-            avgscore INTEGER )")
+            avgscore REAL )")
         
 # users table
 db.execute("CREATE TABLE users ( \
@@ -31,7 +31,7 @@ db.execute("CREATE TABLE reviews ( \
             user_id INTEGER REFERENCES users(user_id), \
             isbn VARCHAR REFERENCES books(isbn), \
             review VARCHAR, \
-            score INTEGER NOT NULL )")
+            score REAL NOT NULL )")
 
 with open("books.csv", "r") as books :
     
