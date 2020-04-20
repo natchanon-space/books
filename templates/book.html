@@ -1,26 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Data</title>
-</head>
-
-<body>
-    <div class="login">
-        {% if user == None %}
-        <form action="{{ url_for('login') }}" method="POST">
-            <input type="text" name="username" placeholder="username">
-            <input type="password" name="password" placeholder="password">
-            <button>login</button>
-        </form>
-        <a href="{{ url_for('register') }}">register</a>
-        {% else %}
-        <a href="{{ url_for('account', username = user.username) }}">{{ user.username }}</a>
-        <a href="{{ url_for('logout') }}">logout</a>
-        {% endif %}
-    </div>
+{% block content %}
     <div>
         <h1>{{ book.title }}</h1>
         <p>isbn : {{ book.isbn }}</p>
@@ -30,6 +10,4 @@
         <p>rating : {{ book.avgscore }}</p>
     </div>
     <a href="{{ url_for('index') }}">return to index</a>
-</body>
-
-</html>
+{% endblock %}
