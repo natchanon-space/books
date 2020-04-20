@@ -11,17 +11,20 @@
     <p>rating : {{ book.avgscore }}</p>
 </div>
 
-{% for review in reviews %}
-<div class="review">
-    <h2>{{ review.username }} score : {{ review.score }}</h2>
-    <p>{{ review.review }}</p>
+<div>
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+    <div class="review">
+        <h3>{{ review.username }} score : {{ review.score }}</h3>
+        <p>{{ review.review }}</p>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
 
 {% if user != None %}
     {% if check == None %}
     <div>
-        <h2>Review</h2>
+        <h2>Wanna review?</h2>
         <form action="{{ url_for('review', isbn=book.isbn) }}" , method="POST">
         <textarea name="review" cols="30" rows="10" placeholder="your review"></textarea>
         <br>
